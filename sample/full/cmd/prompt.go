@@ -52,4 +52,16 @@ func init() {
 			return nil
 		},
 	})
+
+	promptCommand.AddCommand(&grumble.Command{
+		Name: "test",
+		Help: "test to default prompt",
+		Args: func(a *grumble.Args) {
+			a.StringList("test", "test")
+		},
+		Run: func(c *grumble.Context) error {
+			c.App.Println(c.Args.StringList("test"))
+			return nil
+		},
+	})
 }

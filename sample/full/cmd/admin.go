@@ -39,8 +39,9 @@ func init() {
 	App.AddCommand(adminCommand)
 
 	adminCommand.AddCommand(&grumble.Command{
-		Name: "root",
-		Help: "root the machine",
+		Name:     "root",
+		LongHelp: "rooot",
+		Help:     "root the machine",
 		Run: func(c *grumble.Context) error {
 			fmt.Println(c.Flags.String("directory"))
 			return fmt.Errorf("failed")

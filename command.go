@@ -52,6 +52,9 @@ type Command struct {
 	// Sample: start [OPTIONS] CONTAINER [CONTAINER...]
 	Usage string
 
+	// Example.
+	Example string
+
 	// Define all command flags within this function.
 	Flags func(f *Flags)
 

@@ -26,10 +26,10 @@ package grumble
 
 import (
 	"fmt"
+	"github.com/desertbit/columnize"
 	"os"
 	"sort"
-
-	"github.com/desertbit/columnize"
+	"strings"
 )
 
 func defaultInterruptHandler(a *App, count int) {
@@ -176,6 +176,15 @@ func defaultPrintCommandHelp(a *App, cmd *Command, shell bool) {
 	// Flags.
 	printFlags(a, &cmd.flags)
 
+	// Example.
+	if len(cmd.Example) > 0 {
+		a.Println()
+		printHeadline(a, "Example:")
+		example := "  " + strings.TrimSpace(cmd.Example)
+		example = strings.ReplaceAll(example, "\n", "\n  ")
+		a.Printf("%s\n", example)
+	}
+
 	// Sub Commands.
 	if len(cmd.commands.list) > 0 {
 		// Only print the first level of sub commands.
@@ -245,7 +254,7 @@ func printUsage(a *App, cmd *Command) {
 			if arg.optional {
 				a.Printf(" [%s]", name)
 			} else {
-				a.Printf(" %s", name)
+				a.Printf(" <%s>", name)
 			}
 
 			if arg.isList && (arg.listMin != -1 || arg.listMax != -1) {

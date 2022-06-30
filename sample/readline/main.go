@@ -55,6 +55,8 @@ func main() {
 		app.RunWithReadline(rl)
 	}
 
-	cfg := &readline.Config{}
+	cfg := &readline.Config{
+		HistorySearchFold: true,
+	}
 	readline.ListenRemote("tcp", ":5555", cfg, handleFunc)
 }
