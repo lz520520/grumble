@@ -126,6 +126,10 @@ func (a *App) Commands() *Commands {
 	return &a.commands
 }
 
+func (a *App) Flags() *Flags {
+	return &a.flags
+}
+
 // PrintError prints the given error.
 func (a *App) PrintError(err error) {
 	if a.config.NoColor {
@@ -189,6 +193,10 @@ func (a *App) SetPrintASCIILogo(f func(a *App)) {
 		}
 		f(a)
 	}
+}
+
+func (a *App) GetPrintASCIILogo() func(a *App) {
+	return a.printASCIILogo
 }
 
 // Write to the underlying output, using readline if available.
@@ -475,7 +483,7 @@ Loop:
 		}
 
 		// Split the line to args.
-		args, err := shlex.Split(line, true)
+		args, err := shlex.Split(line, false)
 		if err != nil {
 			a.PrintError(fmt.Errorf("invalid args: %v", err))
 			continue Loop

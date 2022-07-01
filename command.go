@@ -120,3 +120,7 @@ func (c *Command) AddCommand(cmd *Command) {
 
 	c.commands.Add(cmd)
 }
+
+func (c *Command) GetCommands() *Commands {
+	return &c.commands
+}

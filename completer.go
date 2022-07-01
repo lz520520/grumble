@@ -46,7 +46,7 @@ func (c *completer) Do(line []rune, pos int) (newLine [][]rune, length int) {
 	line = line[:pos]
 
 	var words []string
-	if w, err := shlex.Split(string(line), true); err == nil {
+	if w, err := shlex.Split(string(line), false); err == nil {
 		words = w
 	} else {
 		words = strings.Fields(string(line)) // fallback

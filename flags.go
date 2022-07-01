@@ -51,13 +51,17 @@ type Flags struct {
 	list     []*flagItem
 }
 
+func (f *Flags) GetList() []*flagItem {
+	return f.list
+}
+
 // empty returns true, if the flags are empty.
 func (f *Flags) empty() bool {
 	return len(f.list) == 0
 }
 
 // sort the flags by their name.
-func (f *Flags) sort() {
+func (f *Flags) Sort() {
 	sort.Slice(f.list, func(i, j int) bool {
 		return f.list[i].Long < f.list[j].Long
 	})
