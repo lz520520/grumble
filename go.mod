@@ -15,7 +15,7 @@ require (
 	github.com/hinshun/vt10x v0.0.0-20180809195222-d55458df857c // indirect
 	github.com/kr/pty v1.1.8 // indirect
 	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4 // indirect
-	golang.org/x/sys v0.0.0-20201214210602-f9fddec55a1e // indirect
+	golang.org/x/sys v0.0.0-20220702020025-31831981b65f // indirect
 	gopkg.in/AlecAivazis/survey.v1 v1.8.5
 )
 
