@@ -208,6 +208,9 @@ func (a *App) Write(p []byte) (int, error) {
 // Note that calling before Run() will return a different instance.
 func (a *App) Stdout() io.Writer {
 	if a.rl != nil {
+		if a.rl.Terminal.IsWriteLock() {
+			a.rl.Terminal.WriteWait()
+		}
 		return a.rl.Stdout()
 	}
 	return os.Stdout
@@ -217,6 +220,9 @@ func (a *App) Stdout() io.Writer {
 // Note that calling before Run() will return a different instance.
 func (a *App) Stderr() io.Writer {
 	if a.rl != nil {
+		if a.rl.Terminal.IsWriteLock() {
+			a.rl.Terminal.WriteWait()
+		}
 		return a.rl.Stderr()
 	}
 	return os.Stderr
@@ -278,9 +284,18 @@ func (a *App) RunCommand(args []string) error {
 	ctx := newContext(a, cmd, fg, cmdArgMap)
 
 	// Run the command.
-	err = cmd.Run(ctx)
-	if err != nil {
-		return err
+	// 这里上锁是为了让prompt先打印
+	switch cmd.RunMode {
+	case RunInteractive:
+		err = cmd.Run(ctx)
+		if err != nil {
+			return err
+		}
+	case RunTask:
+		if cmd.Name != "help" {
+			a.rl.Terminal.WriteLock()
+		}
+		go cmd.Run(ctx)
 	}
 
 	return nil

@@ -28,6 +28,11 @@ import (
 	"fmt"
 )
 
+const (
+	RunTask = iota
+	RunInteractive
+)
+
 // Command is just that, a command for your application.
 type Command struct {
 	// Command name.
@@ -54,6 +59,9 @@ type Command struct {
 
 	// Example.
 	Example string
+
+	// RunMode, Default: RunTask
+	RunMode int
 
 	// Define all command flags within this function.
 	Flags func(f *Flags)
