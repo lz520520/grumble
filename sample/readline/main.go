@@ -52,7 +52,7 @@ func main() {
 		}
 		app.AddCommand(adminCommand)
 
-		app.RunWithReadline(rl)
+		app.RunWithReadline(rl, false)
 	}
 
 	cfg := &readline.Config{

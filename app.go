@@ -311,10 +311,10 @@ func (a *App) Run() (err error) {
 	if err != nil {
 		return err
 	}
-	return a.RunWithReadline(rl)
+	return a.RunWithReadline(rl, true)
 }
 
-func (a *App) RunWithReadline(rl *readline.Instance) (err error) {
+func (a *App) RunWithReadline(rl *readline.Instance, local bool) (err error) {
 	defer a.Close()
 
 	a.setReadlineDefaults(rl.Config)
@@ -341,30 +341,32 @@ func (a *App) RunWithReadline(rl *readline.Instance) (err error) {
 	a.isShell = len(args) == 0
 
 	// Add general builtin commands.
-	a.addCommand(&Command{
-		Name: "help",
-		Help: "use 'help [command]' for command help",
-		Args: func(a *Args) {
-			a.StringList("command", "the name of the command")
-		},
-		Run: func(c *Context) error {
-			args := c.Args.StringList("command")
-			if len(args) == 0 {
-				a.printHelp(a, a.isShell)
+	if local {
+		a.addCommand(&Command{
+			Name: "help",
+			Help: "use 'help [command]' for command help",
+			Args: func(a *Args) {
+				a.StringList("command", "the name of the command")
+			},
+			Run: func(c *Context) error {
+				args := c.Args.StringList("command")
+				if len(args) == 0 {
+					a.printHelp(a, a.isShell)
+					return nil
+				}
+				cmd, _, err := a.commands.FindCommand(args)
+				if err != nil {
+					return err
+				} else if cmd == nil {
+					a.PrintError(fmt.Errorf("command not found"))
+					return nil
+				}
+				a.printCommandHelp(a, cmd, a.isShell)
 				return nil
-			}
-			cmd, _, err := a.commands.FindCommand(args)
-			if err != nil {
-				return err
-			} else if cmd == nil {
-				a.PrintError(fmt.Errorf("command not found"))
-				return nil
-			}
-			a.printCommandHelp(a, cmd, a.isShell)
-			return nil
-		},
-		isBuiltin: true,
-	}, false)
+			},
+			isBuiltin: true,
+		}, false)
+	}
 
 	// Check if help should be displayed.
 	if a.flagMap.Bool("help") {
@@ -375,7 +377,7 @@ func (a *App) RunWithReadline(rl *readline.Instance) (err error) {
 	// Add shell builtin commands.
 	// Ensure to add all commands before running the init hook.
 	// If the init hook does something with the app commands, then these should also be included.
-	if a.isShell {
+	if a.isShell && local {
 		a.AddCommand(&Command{
 			Name: "exit",
 			Help: "exit the shell",
