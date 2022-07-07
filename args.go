@@ -69,6 +69,7 @@ func (a *Args) register(
 	// Ensure the name is unique.
 	for _, ai := range a.list {
 		if ai.Name == name {
+			return
 			panic(fmt.Errorf("argument '%s' registered twice", name))
 		}
 	}

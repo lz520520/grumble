@@ -58,6 +58,8 @@ type App struct {
 	printCommandHelp func(a *App, cmd *Command, shell bool)
 	interruptHandler func(a *App, count int)
 	printASCIILogo   func(a *App)
+
+	extendVar interface{} // 扩展变量
 }
 
 // New creates a new app.
@@ -94,6 +96,14 @@ func New(c *Config) (a *App) {
 	}
 
 	return
+}
+
+func (a *App) SetExtendVar(extend interface{}) {
+	a.extendVar = extend
+}
+
+func (a *App) GetExtendVar() interface{} {
+	return a.extendVar
 }
 
 // SetPrompt sets a new prompt.
@@ -281,7 +291,7 @@ func (a *App) RunCommand(args []string) error {
 	}
 
 	// Create the context and pass the rest args.
-	ctx := newContext(a, cmd, fg, cmdArgMap)
+	ctx := newContext(a, cmd, fg, cmdArgMap, a.extendVar)
 
 	// Run the command.
 	// 这里上锁是为了让prompt先打印
@@ -341,32 +351,30 @@ func (a *App) RunWithReadline(rl *readline.Instance, local bool) (err error) {
 	a.isShell = len(args) == 0
 
 	// Add general builtin commands.
-	if local {
-		a.addCommand(&Command{
-			Name: "help",
-			Help: "use 'help [command]' for command help",
-			Args: func(a *Args) {
-				a.StringList("command", "the name of the command")
-			},
-			Run: func(c *Context) error {
-				args := c.Args.StringList("command")
-				if len(args) == 0 {
-					a.printHelp(a, a.isShell)
-					return nil
-				}
-				cmd, _, err := a.commands.FindCommand(args)
-				if err != nil {
-					return err
-				} else if cmd == nil {
-					a.PrintError(fmt.Errorf("command not found"))
-					return nil
-				}
-				a.printCommandHelp(a, cmd, a.isShell)
+	a.addCommand(&Command{
+		Name: "help",
+		Help: "use 'help [command]' for command help",
+		Args: func(a *Args) {
+			a.StringList("command", "the name of the command")
+		},
+		Run: func(c *Context) error {
+			args := c.Args.StringList("command")
+			if len(args) == 0 {
+				a.printHelp(a, a.isShell)
 				return nil
-			},
-			isBuiltin: true,
-		}, false)
-	}
+			}
+			cmd, _, err := a.commands.FindCommand(args)
+			if err != nil {
+				return err
+			} else if cmd == nil {
+				a.PrintError(fmt.Errorf("command not found"))
+				return nil
+			}
+			a.printCommandHelp(a, cmd, a.isShell)
+			return nil
+		},
+		isBuiltin: true,
+	}, false)
 
 	// Check if help should be displayed.
 	if a.flagMap.Bool("help") {
@@ -377,7 +385,7 @@ func (a *App) RunWithReadline(rl *readline.Instance, local bool) (err error) {
 	// Add shell builtin commands.
 	// Ensure to add all commands before running the init hook.
 	// If the init hook does something with the app commands, then these should also be included.
-	if a.isShell && local {
+	if a.isShell {
 		a.AddCommand(&Command{
 			Name: "exit",
 			Help: "exit the shell",

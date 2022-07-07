@@ -37,14 +37,17 @@ type Context struct {
 
 	// Cmd is the currently executing command.
 	Command *Command
+
+	ExtendVar interface{}
 }
 
-func newContext(a *App, cmd *Command, flags FlagMap, args ArgMap) *Context {
+func newContext(a *App, cmd *Command, flags FlagMap, args ArgMap, ex interface{}) *Context {
 	return &Context{
-		App:     a,
-		Command: cmd,
-		Flags:   flags,
-		Args:    args,
+		App:       a,
+		Command:   cmd,
+		Flags:     flags,
+		Args:      args,
+		ExtendVar: ex,
 	}
 }
 

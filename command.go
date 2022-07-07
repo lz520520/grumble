@@ -122,11 +122,14 @@ func (c *Command) AddCommand(cmd *Command) {
 	if err != nil {
 		panic(err)
 	}
-
 	cmd.parent = c
-	cmd.registerFlagsAndArgs(true)
 
-	c.commands.Add(cmd)
+	// check whether the cmd is registered
+	if c.commands.Get(cmd.Name) == nil {
+		cmd.registerFlagsAndArgs(true)
+		c.commands.Add(cmd)
+
+	}
 }
 
 func (c *Command) GetCommands() *Commands {
