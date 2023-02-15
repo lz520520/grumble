@@ -19,4 +19,4 @@ require (
 	gopkg.in/AlecAivazis/survey.v1 v1.8.5
 )
 
-replace github.com/desertbit/readline v1.5.1 => github.com/lz520520/readline v1.5.1
+replace github.com/desertbit/readline v1.5.1 => github.com/lz520520/readline v1.6.1
