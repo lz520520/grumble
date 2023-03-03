@@ -17,4 +17,5 @@ require (
 	gopkg.in/AlecAivazis/survey.v1 v1.8.5
 )
 
+replace github.com/desertbit/grumble v1.1.3 => github.com/lz520520/grumble v1.1.7
 replace github.com/desertbit/readline v1.5.1 => github.com/lz520520/readline v1.6.1
