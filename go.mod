@@ -5,8 +5,6 @@ go 1.12
 require (
 	github.com/Netflix/go-expect v0.0.0-20190729225929-0e00d9168667 // indirect
 	github.com/desertbit/closer/v3 v3.1.3
-	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/desertbit/closer/v3 v3.1.2
 	github.com/desertbit/columnize v2.1.0+incompatible
 	github.com/desertbit/go-shlex v0.1.1
 	github.com/desertbit/readline v1.5.1
@@ -16,10 +14,9 @@ require (
 	github.com/hinshun/vt10x v0.0.0-20180809195222-d55458df857c // indirect
 	github.com/kr/pty v1.1.8 // indirect
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect
-	golang.org/x/crypto v0.6.0 // indirect
-	golang.org/x/sys v0.5.0 // indirect
 	gopkg.in/AlecAivazis/survey.v1 v1.8.8
 )
 
 replace github.com/desertbit/grumble v1.1.3 => github.com/lz520520/grumble v1.1.7
+
 replace github.com/desertbit/readline v1.5.1 => github.com/lz520520/readline v1.6.1
