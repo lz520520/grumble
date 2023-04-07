@@ -59,7 +59,7 @@ func (c *completer) Do(line []rune, pos int) (newLine [][]rune, length int) {
 	}
 
 	// Simple hack to allow auto completion for help.
-	if len(words) > 0 && words[0] == "help" {
+	if len(words) > 0 && words[0] == "help" && !strings.HasPrefix(prefix, "-") {
 		words = words[1:]
 	}
 

@@ -40,7 +40,7 @@ func defaultInterruptHandler(a *App, count int) {
 	a.Println("input Ctrl-c once more to exit")
 }
 
-func defaultPrintHelp(a *App, shell bool) {
+func defaultPrintHelp(a *App, name string, help string, shell bool) {
 	// Columnize options.
 	config := columnize.DefaultConfig()
 	config.Delim = "|"
@@ -153,7 +153,7 @@ func defaultPrintHelp(a *App, shell bool) {
 	a.Println()
 }
 
-func defaultPrintCommandHelp(a *App, cmd *Command, shell bool) {
+func defaultPrintCommandHelp(a *App, cmd *Command, name string, help string, shell bool) {
 	// Columnize options.
 	config := columnize.DefaultConfig()
 	config.Delim = "|"
@@ -190,11 +190,17 @@ func defaultPrintCommandHelp(a *App, cmd *Command, shell bool) {
 		// Only print the first level of sub commands.
 		var output []string
 		for _, c := range cmd.commands.list {
-			name := c.Name
-			for _, a := range c.Aliases {
-				name += ", " + a
+			if name != "" && !strings.Contains(strings.ToLower(c.Name), strings.ToLower(name)) {
+				continue
 			}
-			output = append(output, fmt.Sprintf("%s | %v", name, c.Help))
+			if help != "" && !strings.Contains(strings.ToLower(c.Help), strings.ToLower(help)) {
+				continue
+			}
+			name2 := c.Name
+			for _, a := range c.Aliases {
+				name2 += ", " + a
+			}
+			output = append(output, fmt.Sprintf("%s | %v", name2, c.Help))
 		}
 
 		a.Println()

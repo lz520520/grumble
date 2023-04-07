@@ -54,8 +54,8 @@ type App struct {
 	initHook  func(a *App, flags FlagMap) error
 	shellHook func(a *App) error
 
-	printHelp        func(a *App, shell bool)
-	printCommandHelp func(a *App, cmd *Command, shell bool)
+	printHelp        func(a *App, name string, help string, shell bool)
+	printCommandHelp func(a *App, cmd *Command, name string, help string, shell bool)
 	interruptHandler func(a *App, count int)
 	printASCIILogo   func(a *App)
 
@@ -185,12 +185,12 @@ func (a *App) SetInterruptHandler(f func(a *App, count int)) {
 }
 
 // SetPrintHelp sets the print help function.
-func (a *App) SetPrintHelp(f func(a *App, shell bool)) {
+func (a *App) SetPrintHelp(f func(a *App, name string, help string, shell bool)) {
 	a.printHelp = f
 }
 
 // SetPrintCommandHelp sets the print help function for a single command.
-func (a *App) SetPrintCommandHelp(f func(a *App, c *Command, shell bool)) {
+func (a *App) SetPrintCommandHelp(f func(a *App, c *Command, name string, help string, shell bool)) {
 	a.printCommandHelp = f
 }
 
@@ -274,7 +274,7 @@ func (a *App) RunCommand(args []string) error {
 
 	// Print the command help if the command run function is nil or if the help flag is set.
 	if fg.Bool("help") || cmd.Run == nil {
-		a.printCommandHelp(a, cmd, a.isShell)
+		a.printCommandHelp(a, cmd, "", "", a.isShell)
 		return nil
 	}
 
@@ -357,10 +357,15 @@ func (a *App) RunWithReadline(rl *readline.Instance, local bool) (err error) {
 		Args: func(a *Args) {
 			a.StringList("command", "the name of the command")
 		},
+		Flags: func(f *Flags) {
+			f.String("", "fName", "", "filter name")
+			f.String("", "fHelp", "", "filter help")
+
+		},
 		Run: func(c *Context) error {
 			args := c.Args.StringList("command")
 			if len(args) == 0 {
-				a.printHelp(a, a.isShell)
+				a.printHelp(a, c.Flags.String("fName"), c.Flags.String("fHelp"), a.isShell)
 				return nil
 			}
 			cmd, _, err := a.commands.FindCommand(args)
@@ -370,15 +375,15 @@ func (a *App) RunWithReadline(rl *readline.Instance, local bool) (err error) {
 				a.PrintError(fmt.Errorf("command not found"))
 				return nil
 			}
-			a.printCommandHelp(a, cmd, a.isShell)
+			a.printCommandHelp(a, cmd, c.Flags.String("fName"), c.Flags.String("fHelp"), a.isShell)
 			return nil
 		},
 		isBuiltin: true,
-	}, false)
+	}, true)
 
 	// Check if help should be displayed.
 	if a.flagMap.Bool("help") {
-		a.printHelp(a, false)
+		a.printHelp(a, "", "", false)
 		return nil
 	}
 
